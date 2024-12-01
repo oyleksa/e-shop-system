@@ -21,7 +21,7 @@ public class Cart {
     }
 
     // TODO: check how I can improve this method (I mean is it possible it product
-    //  does not exist)
+    //  does not exist).
     public void removeProduct(Product product) {
         products.remove(product);
     }
