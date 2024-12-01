@@ -24,7 +24,31 @@ public class OrderRepository {
                 .findFirst().orElse(null);
     }
 
-//    public Order findByCustomer(String customerID) {
-// finish it till the end
-//    }
+    public List<Order> findByCustomer(String customerID) {
+        return orderList.stream()
+                .filter(order -> order.getCustomer().getUserID().equals(customerID))
+                .toList();
+    }
+
+    // Update (if the order repository have already existed we need only )
+    public void updateOrder(Order updatedOrder){
+        for (int i = 0; i < orderList.size(); i++) {
+            if (orderList.get(i).getOrderID().equals(updatedOrder.getOrderID())) {
+                // to replace
+                orderList.set(i, updatedOrder);
+                // in this context it means exit
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Order with ID " + updatedOrder.getOrderID() +
+                " not found.");
+    }
+
+    // Delete
+    // why this method boolean? it helps caller to understand if the procedure of
+    // deleting finish correctly
+    public boolean deleteByID(String id) {
+        return orderList.removeIf(order -> order.getOrderID().equals(id));
+    }
+
 }

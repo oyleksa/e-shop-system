@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="540ff6c3-a299-426a-902e-4406050e4421" name="Changes" comment="Adding setters and getters into classes &amp; testing">
+    <list default="true" id="540ff6c3-a299-426a-902e-4406050e4421" name="Changes" comment="Adding methods into repository and model">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Product.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/OrderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/ProductRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +72,14 @@
       <option name="project" value="LOCAL" />
       <updated>1732919065336</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adding methods into repository and model">
+      <created>1733055351240</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1733055351240</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -91,6 +95,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adding setters and getters into classes &amp; testing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding setters and getters into classes &amp; testing" />
+    <MESSAGE value="Adding methods into repository and model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding methods into repository and model" />
   </component>
 </project>
