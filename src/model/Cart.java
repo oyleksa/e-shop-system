@@ -26,9 +26,8 @@ public class Cart {
         products.remove(product);
     }
 
-    // TODO: to make it clear what is it. I mean ::
     public double calculateTotalPrice() {
-        return products.stream().mapToDouble(Product::getPrice).sum();
+        return products.stream().mapToDouble(product -> product.getPrice()).sum();
     }
 
     // getters and setters

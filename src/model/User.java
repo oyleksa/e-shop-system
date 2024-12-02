@@ -1,16 +1,18 @@
 package model;
 
-abstract class User {
+public abstract class User {
 
     private String name;
     private String userID;
     private String email;
+    private String password;
 
     // create a constructor
-    User(String name, String userID, String email) {
+    User(String name, String userID, String email, String password) {
         setName(name);
         setUserID(userID);
         setEmail(email);
+        setPassword(password);
     }
 
     //TODO: add a method that check not null input
@@ -37,5 +39,13 @@ abstract class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -1,0 +1,267 @@
+Index: src/service/UserService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package service;\r\n\r\npublic class UserService {\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/service/UserService.java b/src/service/UserService.java
+--- a/src/service/UserService.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/src/service/UserService.java	(date 1733167459185)
+@@ -1,4 +1,58 @@
+ package service;
+ 
++import model.User;
++import repository.UserRepository;
++
+ public class UserService {
+-}
++    private final UserRepository userRepository;
++
++    // Constructor Dependency injection
++
++    // It provides a way to pass all the dependencies
++    // a class will need via its constructor. It's considered the most preferred
++    // approach to dependency injection, mainly because it guarantees the object
++    // state is valid and its immutability right after its creation.
++    public UserService(UserRepository userRepository) {
++        this.userRepository = userRepository;
++    }
++
++    // Register a new user
++    public void registerUser (User user) {
++        if (userRepository.existedByID(user.getUserID()))
++            throw new IllegalArgumentException("This user has already existed.");
++        userRepository.save(user);
++        System.out.println("New user registered successfully!");
++    }
++
++    // Login User
++    public User loginUser(String userID, String password) {
++        User user = userRepository.findByID(userID);
++        if (user == null || user.getPassword().equals(password))
++            throw new IllegalArgumentException("Invalid username or password.");
++        System.out.println("Login successful for user: " + user.getUserID());
++        return user;
++    }
++
++    // Find user (why we need to repeat this method? - because
++    // service package has a strong high-check. The analogy with the kitchen and manager)
++    public User findUser(String userID) {
++        User user = userRepository.findByID(userID);
++        if (user == null)
++            throw new IllegalArgumentException("User " + userID + " does not exist.");
++        return user;
++    }
++
++    //Update user
++    public void updateUser(User user) {
++        userRepository.updateUsers(user);
++        System.out.println("User updated successfully!");
++    }
++
++    // Delete user
++    public void deleteUser(String userID) {
++        if (!userRepository.existedByID(userID))
++            throw new IllegalArgumentException("User " + userID + " does not exist.");
++        userRepository.deleteByID(userID);
++        System.out.println("User deleted successfully!");
++    }
++}
+\ No newline at end of file
+Index: src/service/ProductService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package service;\r\n\r\npublic class ProductService {\r\n  //TODO: adding methods + interface (?)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/service/ProductService.java b/src/service/ProductService.java
+--- a/src/service/ProductService.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/src/service/ProductService.java	(date 1733167459193)
+@@ -1,5 +1,15 @@
+ package service;
+ 
++import repository.ProductRepository;
++
+ public class ProductService {
+-  //TODO: adding methods + interface (?)
++    private final ProductRepository productRepository;
++
++    // Constructor Dependency injection
++    public ProductService(ProductRepository productRepository) {
++        this.productRepository = productRepository;
++    }
++
++
++
+ }
+Index: src/service/CartService.java
+===================================================================
+diff --git a/src/service/CartService.java b/src/service/CartService.java
+deleted file mode 100644
+--- a/src/service/CartService.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ /dev/null	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
+@@ -1,4 +0,0 @@
+-package service;
+-
+-public class CartService {
+-}
+Index: src/repository/UserRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package repository;\r\n\r\npublic class UserRepository {\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/repository/UserRepository.java b/src/repository/UserRepository.java
+--- a/src/repository/UserRepository.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/src/repository/UserRepository.java	(date 1733163773462)
+@@ -1,4 +1,56 @@
+ package repository;
+ 
++import model.User;
++import java.util.ArrayList;
++import java.util.List;
++
++// This class implements CRUD system (create, read, update, delete) as a database
++
+ public class UserRepository {
+-}
++    private final List<User> usersList = new ArrayList<>();
++
++    public int numOfUsers() {
++        return usersList.size();
++    }
++
++    public boolean existedByID (String userID) {
++        return usersList.stream().anyMatch(user -> user.getUserID().equals(userID));
++    }
++
++    // Create
++    public void save(User user) {
++        // just to check the correct info
++        if (user != null && !usersList.contains(user))
++            usersList.add(user);
++    }
++
++    // Read
++    public List<User> findAll() {
++        return new ArrayList<>(usersList);
++    }
++
++    public User findByID(String userID) {
++        return usersList.stream()
++                .filter(user -> user.getUserID().equals(userID))
++                .findFirst().orElse(null);
++    }
++
++    // Update
++    public void updateUsers(User updatedUser) {
++        for (int i = 0; i < usersList.size(); i++) {
++            if (usersList.get(i).getUserID().equals(updatedUser.getUserID())) {
++                usersList.set(i, updatedUser);
++                // as an exit
++                return;
++            }
++        }
++        throw new IllegalArgumentException("The user with this ID " +
++                updatedUser.getUserID() + " not found.");
++    }
++
++    // Delete
++    public boolean deleteByID(String userID) {
++        return usersList.removeIf(user -> user.getUserID().equals(userID));
++    }
++
++}
+\ No newline at end of file
+Index: src/model/Cart.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\n// A cart used during the shopping process\r\npublic class Cart {\r\n    private List<Product> products = new ArrayList<>();\r\n    private User user;\r\n\r\n    // a constructor. why without List? because we will change it during the process\r\n    public Cart(User user) {\r\n        setUser(user);\r\n    }\r\n\r\n    public List<Product> getProducts() {\r\n        return products;\r\n    }\r\n\r\n    public void addProduct(Product product) {\r\n        products.add(product);\r\n    }\r\n\r\n    // TODO: check how I can improve this method (I mean is it possible it product\r\n    //  does not exist)\r\n    public void removeProduct(Product product) {\r\n        products.remove(product);\r\n    }\r\n\r\n    // TODO: to make it clear what is it. I mean ::\r\n    public double calculateTotalPrice() {\r\n        return products.stream().mapToDouble(Product::getPrice).sum();\r\n    }\r\n\r\n    // getters and setters\r\n    public User getUser() {\r\n        return user;\r\n    }\r\n\r\n    public void setUser(User user) {\r\n        this.user = user;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/model/Cart.java b/src/model/Cart.java
+--- a/src/model/Cart.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/src/model/Cart.java	(date 1733161630946)
+@@ -26,9 +26,8 @@
+         products.remove(product);
+     }
+ 
+-    // TODO: to make it clear what is it. I mean ::
+     public double calculateTotalPrice() {
+-        return products.stream().mapToDouble(Product::getPrice).sum();
++        return products.stream().mapToDouble(product -> product.getPrice()).sum();
+     }
+ 
+     // getters and setters
+Index: src/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\n\r\nabstract class User {\r\n\r\n    private String name;\r\n    private String userID;\r\n    private String email;\r\n\r\n    // create a constructor\r\n    User(String name, String userID, String email) {\r\n        setName(name);\r\n        setUserID(userID);\r\n        setEmail(email);\r\n    }\r\n\r\n    //TODO: add a method that check not null input\r\n\r\n    public String getName() {\r\n        return name;\r\n    }\r\n\r\n    public void setName(String name) {\r\n        this.name = name;\r\n    }\r\n\r\n    public String getUserID() {\r\n        return userID;\r\n    }\r\n\r\n    public void setUserID(String userID) {\r\n        this.userID = userID;\r\n    }\r\n\r\n    public String getEmail() {\r\n        return email;\r\n    }\r\n\r\n    public void setEmail(String email) {\r\n        this.email = email;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/model/User.java b/src/model/User.java
+--- a/src/model/User.java	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/src/model/User.java	(date 1733164045439)
+@@ -1,16 +1,18 @@
+ package model;
+ 
+-abstract class User {
++public abstract class User {
+ 
+     private String name;
+     private String userID;
+     private String email;
++    private String password;
+ 
+     // create a constructor
+-    User(String name, String userID, String email) {
++    User(String name, String userID, String email, String password) {
+         setName(name);
+         setUserID(userID);
+         setEmail(email);
++        setPassword(password);
+     }
+ 
+     //TODO: add a method that check not null input
+@@ -38,4 +40,12 @@
+     public void setEmail(String email) {
+         this.email = email;
+     }
++
++    public String getPassword() {
++        return password;
++    }
++
++    public void setPassword(String password) {
++        this.password = password;
++    }
+ }
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"540ff6c3-a299-426a-902e-4406050e4421\" name=\"Changes\" comment=\"Adding methods into repository and model\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/repository/OrderRepository.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/repository/OrderRepository.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2pWKXWpIxk1EMcXELkUQIFMmb2b\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"Main\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"controller.Main\" />\r\n      <module name=\"e-shop-system\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"controller.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Application.Main\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"540ff6c3-a299-426a-902e-4406050e4421\" name=\"Changes\" comment=\"\" />\r\n      <created>1732876432522</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1732876432522</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Adding setters and getters into classes &amp; testing\">\r\n      <created>1732919065336</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1732919065336</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Adding methods into repository and model\">\r\n      <created>1733055351240</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1733055351240</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Adding setters and getters into classes &amp; testing\" />\r\n    <MESSAGE value=\"Adding methods into repository and model\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Adding methods into repository and model\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 98041c9f010768adf2e70d2f451febf1c42d6bb8)
++++ b/.idea/workspace.xml	(date 1733167459575)
+@@ -3,7 +3,12 @@
+   <component name="ChangeListManager">
+     <list default="true" id="540ff6c3-a299-426a-902e-4406050e4421" name="Changes" comment="Adding methods into repository and model">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/OrderRepository.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/model/Cart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Cart.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/User.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repository/UserRepository.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/service/CartService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/ProductService.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/UserService.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
